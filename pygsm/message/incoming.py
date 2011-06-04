@@ -15,6 +15,8 @@ class IncomingMessage(object):
         self._sender = sender
         self._sent   = sent
         self._text   = text
+        
+        self._rawtime = None
 
         # assume that the message was
         # received right now, since we

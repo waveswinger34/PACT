@@ -5,10 +5,11 @@ import time
 from pygsm import GsmModem
 
 class Reminder(object):
-    register = []
-    
-    def __init__(self, modem):
+    def __init__(self, modem, scheduler):
+        self.register = {}
+        self.count = 0
         self.modem = modem
+        self.scheduler = scheduler
 
     def serve(self):
         while True:
@@ -22,18 +23,37 @@ class Reminder(object):
     def handle(self, msg):
         # check if sender in database
         if msg.sender not in self.register:
-            self.register.append(msg.sender)
-            msg.respond("Thanks for registering.")
+            #self.register.append(msg)
+            self.register[msg.sender] = msg
+            #msg.respond("Thanks for registering.")
+            self.modem.send_sms(msg.sender, "Thanks for registering.")
+            self.modem.wait_for_network()
+            if self.count % 2 is 0:
+                self.scheduler.add(msg)
+            self.count += 1
         elif msg.text.lower() is 'stop':
             print 'OK OK we get it!'
             #TODO
         else:
-            # just log the message
-            pass    
+            msg.respond("You are already registered. To stop receiving messages, text STOP. Thanks")    
 
-    def handle_registration(self):
+
+class Scheduler(object):
+    
+    def __init__(self, modem):
+        self.q = []
+        self.modem = modem
+    
+    def poll(self):
         pass
     
+    def add(self, msg):
+        if int(msg._rawtime.split(':')[0]) < 17:
+            self.modem.send_sms(msg.sender, 'Reminder to take meds')
+            self.modem.wait_for_network()
+            self.q.append((msg.sender, 5))
+        else:
+            self.q.append((msg.sender, 6))
 
 port = '/dev/tty.airtel'
 
@@ -45,7 +65,9 @@ print "Waiting for network..."
 s = gsm.wait_for_network()
 
 # start the demo app
-app = Reminder(gsm)
+app = Reminder(gsm, Scheduler(gsm))
 app.serve()
 
-#gsm.send_sms('0245014728', 'wohoooo!!')
+#gsm.send_sms('0245014728', 'Hello')
+#gsm.wait_for_network()
+#gsm.send_sms('0245014728', 'wohoo')

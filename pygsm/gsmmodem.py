@@ -401,14 +401,17 @@ class GsmModem(object):
             # patch the time to represent LOCAL TIME, since
             # the datetime object doesn't seem to represent
             # timezones... at all
-            return dt - tz_offset
+            t = dt - tz_offset
 
         # if the timestamp couldn't be parsed, we've encountered
         # a format the pyGSM doesn't support. this sucks, but isn't
         # important enough to explode like RubyGSM does
         except ValueError:
-            return None
+            t = None
 
+        self._log('%s > %s' % (timestamp, t), "timestamp")
+
+        return t
 
     def _parse_incoming_sms(self, lines):
         """
@@ -544,7 +547,9 @@ class GsmModem(object):
         # create and store the IncomingMessage object
         self._log("Adding incoming message")
         time_sent = self._parse_incoming_timestamp(timestamp)
+        
         msg = message.IncomingMessage(self, sender, time_sent, text)
+        msg._rawtime = timestamp.split(',')[1]
         self.incoming_queue.append(msg)
         return msg
 
