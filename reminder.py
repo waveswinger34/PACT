@@ -55,19 +55,19 @@ class Scheduler(object):
         else:
             self.q.append((msg.sender, 6))
 
-port = '/dev/tty.airtel'
+def main():
+    port = '/dev/tty.airtel'
+    
+    gsm = GsmModem(port=port, logger=GsmModem.debug_logger).boot()
+    
+    print "Waiting for network..."
+    s = gsm.wait_for_network()
+    
+    # start the demo app
+    app = Reminder(gsm, Scheduler(gsm))
+    app.serve()
 
-gsm = GsmModem(
-    port=port,
-    logger=GsmModem.debug_logger).boot()
-
-print "Waiting for network..."
-s = gsm.wait_for_network()
-
-# start the demo app
-app = Reminder(gsm, Scheduler(gsm))
-app.serve()
-
-#gsm.send_sms('0245014728', 'Hello')
-#gsm.wait_for_network()
-#gsm.send_sms('0245014728', 'wohoo')
+if __name__ == "__main__":
+    import sys
+    main()
+    sys.exit(0)

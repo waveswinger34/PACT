@@ -1,1 +1,8 @@
 tmp/
+env/
+*.log
+*.log.*
+*.pyc
+.pydevproject
+.project
+.settings/
