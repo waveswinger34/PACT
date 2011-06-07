@@ -1,0 +1,5 @@
+AIRTEL = 'Airtel'
+MTN = 'MTN'
+VODAFONE = 'Vodafone'
+TIGO = 'Tigo'
+EXPRESSO = 'Expresso'
