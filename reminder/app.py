@@ -21,10 +21,12 @@ class App(rapidsms.apps.base.AppBase):
         pass
 
     def handle (self, msg):
+        print 'Message date is: %s' % msg.date
+        
         if msg.peer not in self.register:
 #            self.register.append(msg)
             self.register[msg.peer] = msg
-            msg.respond('Thanks for registering.')
+#            msg.respond('Thanks for registering.')
 #            self.modem.send_sms(msg.sender, "Thanks for registering.")
 #            self.modem.wait_for_network()
 #            if self.count % 2 is 0:
