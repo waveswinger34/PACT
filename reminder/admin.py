@@ -12,5 +12,11 @@ from models import *
 class SMSAdmin(admin.ModelAdmin):
     list_display = ('sender', 'received_at', 'text', 'network',) 
 
+class SubjectAdmin(admin.ModelAdmin):
+    list_display = ('phone_number','message_id', 'messages_left', 'active',) 
+
+
+
 admin.site.register(SMS, SMSAdmin)
-admin.site.register(Subject)
+admin.site.register(Subject,SubjectAdmin)
+

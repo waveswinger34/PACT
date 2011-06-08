@@ -34,9 +34,7 @@ class App(rapidsms.apps.base.AppBase):
         schedule = EventSchedule.objects.all()
         if not schedule:
             EventSchedule(callback='reminder.tasks.broadcast',
-                          minutes=ALL, 
-                          start_time=datetime.now() + timedelta(minutes=1),
-                          end_time=datetime.now() + timedelta(minutes=2)).save()
+                          minutes=set([14,15,17])).save()
 
         if not subject:
             subject = Subject(phone_number=msg.peer,
