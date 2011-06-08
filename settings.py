@@ -78,8 +78,18 @@ INSTALLED_APPS = [
 #    "rapidsms.contrib.registration",
     "rapidsms.contrib.scheduler",
 #    "rapidsms.contrib.echo",
+#    "djcelery",
 ]
 
+#from datetime import timedelta
+#
+#CELERYBEAT_SCHEDULE = {
+#    "runs-every-30-seconds": {
+#        "task": "reminder.tasks.broadcast",
+#        "schedule": timedelta(seconds=30),
+#        "args": (16, 16)
+#    },
+#}
 
 # this rapidsms-specific setting defines which views are linked by the
 # tabbed navigation. when adding an app to INSTALLED_APPS, you may wish
@@ -167,6 +177,15 @@ TEST_EXCLUDED_APPS = [
 ROOT_URLCONF = "urls"
 
 TIME_ZONE = None
+
+#import djcelery
+#djcelery.setup_loader()
+#
+#BROKER_HOST = "localhost"
+#BROKER_PORT = 5672
+#BROKER_USER = "guest"
+#BROKER_PASSWORD = "guest"
+#BROKER_VHOST = "/"
 
 # since we might hit the database from any thread during testing, the
 # in-memory sqlite database isn't sufficient. it spawns a separate

@@ -21,6 +21,9 @@ class Subject(models.Model):
     """
     phone_number = models.CharField(max_length=15)
     active = models.BooleanField(default=True)
+    message_id = models.IntegerField(null=True)
+    messages_left = models.IntegerField(null=True)
+    received_at = models.DateTimeField()
     
     def __unicode__(self):
         return self.phone_number
@@ -32,5 +35,6 @@ class SMS(models.Model):
     sender = models.CharField(max_length=15)
     text = models.CharField(max_length=140)
     network = models.CharField(max_length=10)
+    
     objects = SMSManager()
     

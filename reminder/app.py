@@ -2,8 +2,12 @@
 import rapidsms
 import re
 from models import *
-from datetime import datetime
 from utils import *
+
+from rapidsms.contrib.scheduler.models import EventSchedule, ALL
+from datetime import datetime, timedelta
+
+import random
 
 class App(rapidsms.apps.base.AppBase):
 #    def __init__(self, router):
@@ -21,19 +25,27 @@ class App(rapidsms.apps.base.AppBase):
         sms = SMS(received_at=msg.date,
                   sender=msg.peer,
                   text=msg.text,
-                  network=self._network(msg.peer))
+                  network=network(msg.peer))
         sms.save()
 
         subject = Subject.objects.filter(phone_number=msg.peer)
         
-        
+
+        schedule = EventSchedule.objects.all()
+        if not schedule:
+            EventSchedule(callback='reminder.tasks.broadcast',
+                          minutes=ALL, 
+                          start_time=datetime.now() + timedelta(minutes=1),
+                          end_time=datetime.now() + timedelta(minutes=2)).save()
+
         if not subject:
-            subject = Subject(phone_number=msg.peer)
-            subject.save()
-            msg.respond('Thanks for registering.')
+            subject = Subject(phone_number=msg.peer,
+                              received_at=msg.date)
             
             if len(Subject.objects.all()) % 2 is 0:
-                pass
+                subject.message_id = random.randint(0, 2)
+            subject.save()
+            msg.respond('Thanks for registering.')
             return True
         elif msg.text.lower() is 'stop' and subject.active:
             subject.active = False
@@ -56,19 +68,4 @@ class App(rapidsms.apps.base.AppBase):
     def stop (self):
         """Perform global app cleanup when the application is stopped."""
         pass
-    
-    def _network(self, phone_number):
-        xs = phone_number[:3]
-        if xs == '026':
-            return AIRTEL
-        elif xs == '024' or xs == '054':
-            return MTN
-        elif xs == '020':
-            return VODAFONE
-        elif xs == '027' or xs == '057':
-            return TIGO
-        elif xs == '028':
-            return EXPRESSO
-        else:
-            return 'Unknown'
         
